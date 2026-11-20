@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "voidwarden",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "name": "Voidwarden Armor",
   "description": "Post-netherite armor with an animated cape.",
   "environment": "*",
@@ -17,7 +17,7 @@
     "voidwarden.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.20.1",
+    "fabricloader": ">=0.19.5",
     "minecraft": "~26.3",
     "fabric-api": "*",
     "java": ">=25"
