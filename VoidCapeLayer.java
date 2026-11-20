@@ -3,21 +3,21 @@ package com.voidwarden.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.voidwarden.ModItems;
 import com.voidwarden.VoidWarden;
-import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.model.player.PlayerModel;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 
 /**
- * Asymmetric, semi-long cape hanging off the LEFT shoulder. 4 chained segments,
- * each swaying with phase-shifted sine waves + walk speed => flowing animation.
+ * Asymmetric, semi-long cape hanging off the LEFT shoulder. Four chained segments
+ * sway with phase-shifted sine waves and player movement.
  */
 public class VoidCapeLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
     private static final Identifier TEX = VoidWarden.id("textures/entity/cape/voidwarden_cape.png");
@@ -36,11 +36,14 @@ public class VoidCapeLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
         }
         root = LayerDefinition.create(mesh, 64, 64).bakeRoot();
         ModelPart p = root;
-        for (int i = 0; i < SEGS; i++) { p = p.getChild("s" + i); seg[i] = p; }
+        for (int i = 0; i < SEGS; i++) {
+            p = p.getChild("s" + i);
+            seg[i] = p;
+        }
     }
 
     @Override
-    public void render(PoseStack pose, MultiBufferSource buffers, int light, AvatarRenderState state, float yRot, float xRot) {
+    public void submit(PoseStack pose, SubmitNodeCollector collector, int light, AvatarRenderState state, float yRot, float xRot) {
         if (!state.chestEquipment.is(ModItems.CHESTPLATE)) return;
         float t = state.ageInTicks;
         float walk = Math.min(1f, state.walkAnimationSpeed);
@@ -54,7 +57,7 @@ public class VoidCapeLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
         }
         pose.pushPose();
         pose.translate(0.0f, state.isCrouching ? 0.14f : 0.0f, 0.125f);
-        root.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TEX)), light, OverlayTexture.NO_OVERLAY);
+        collector.submitModelPart(root, pose, RenderType.entityCutoutNoCull(TEX), light, OverlayTexture.NO_OVERLAY, null);
         pose.popPose();
     }
 }
