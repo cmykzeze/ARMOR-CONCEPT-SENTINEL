@@ -95,7 +95,7 @@ public class VoidCapeLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 
             float elapsed = age - lastAge;
             if (elapsed <= 0f) return;
-            float dt = Math.min(elapsed, MAX_FRAME_STEP);
+            float dt = Math.min(elapsed / 20.0f, MAX_FRAME_STEP);
             float turnRadians = (float) Math.toRadians(wrapDegrees(bodyYawDegrees - lastYaw));
             float turnRate = turnRadians / Math.max(dt, 1.0e-4f);
             lastAge = age;
