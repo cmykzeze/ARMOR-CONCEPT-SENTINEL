@@ -2,8 +2,8 @@ name: Build Sentinel Armor
 on:
   push:
     branches: [main, 'upgrade/**']
-pull_request:
-  branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
