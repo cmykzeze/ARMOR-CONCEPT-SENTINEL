@@ -85,3 +85,17 @@ jobs:
           name: sentinel-armor-minecraft-26.3
           path: buildsrc/build/libs/*.jar
           if-no-files-found: error
+
+      - name: Package complete source project
+        if: success()
+        shell: bash
+        run: |
+          cd buildsrc
+          zip -r ../voidwarden-source-minecraft-26.3.zip . -x "build/*" ".gradle/*"
+
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: sentinel-source-minecraft-26.3
+          path: voidwarden-source-minecraft-26.3.zip
+          if-no-files-found: error
