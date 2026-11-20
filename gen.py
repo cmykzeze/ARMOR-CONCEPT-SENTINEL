@@ -154,6 +154,19 @@ for y in range(H*SEG):
     if y%5==2:
         for x in range(W):
             if R.random()<0.5: mp[x,y]=gold()
+# Tailored panel seams, a central void-sigil and restrained gold piping.
+for y in range(H*SEG):
+    mp[0,y]=(24,22,31,255)
+    mp[W-1,y]=(170,125,34,255) if y%3 else (255,224,105,255)
+    if y%6==0:
+        for x in range(1,W-1): mp[x,y]=(18,16,25,255)
+    elif y%6==1:
+        mp[3,y]=(255,236,135,255)
+for i in range(SEG):
+    cy=i*H+3
+    mp[3,cy]=(255,250,190,255)
+    mp[2,cy]=(255,205,62,255); mp[4,cy]=(255,205,62,255)
+    mp[3,cy-1]=(230,170,30,255); mp[3,cy+1]=(230,170,30,255)
 # ragged hem (alpha cut)
 for x in range(W):
     cut=R.choice([0,1,2,3,4])
