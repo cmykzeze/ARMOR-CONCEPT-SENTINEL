@@ -1,7 +1,9 @@
 name: Build Sentinel Armor
 on:
   push:
-    branches: [main]
+    branches: [main, 'upgrade/**']
+pull_request:
+  branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -17,6 +19,8 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
+          python3 -m pip install --user Pillow
+          python3 gen.py
           mkdir -p buildsrc/src/main/java/com/voidwarden/client
           mkdir -p buildsrc/src/main/java/com/voidwarden/mixin
           mkdir -p buildsrc/src/main/resources/assets/voidwarden/{equipment,lang,items,models/item,textures/item,textures/entity/cape,textures/entity/equipment/humanoid,textures/entity/equipment/humanoid_leggings}
@@ -39,6 +43,10 @@ jobs:
           cp voidwarden_cape.png buildsrc/src/main/resources/assets/voidwarden/textures/entity/cape/
           cp voidwarden.png buildsrc/src/main/resources/assets/voidwarden/textures/entity/equipment/humanoid/
           cp "voidwarden (7).png" buildsrc/src/main/resources/assets/voidwarden/textures/entity/equipment/humanoid_leggings/voidwarden.png
+          cp src/main/resources/assets/voidwarden/textures/item/*.png buildsrc/src/main/resources/assets/voidwarden/textures/item/
+          cp src/main/resources/assets/voidwarden/textures/entity/cape/voidwarden_cape.png buildsrc/src/main/resources/assets/voidwarden/textures/entity/cape/
+          cp src/main/resources/assets/voidwarden/textures/entity/equipment/humanoid/voidwarden.png buildsrc/src/main/resources/assets/voidwarden/textures/entity/equipment/humanoid/
+          cp src/main/resources/assets/voidwarden/textures/entity/equipment/humanoid_leggings/voidwarden.png buildsrc/src/main/resources/assets/voidwarden/textures/entity/equipment/humanoid_leggings/
           cp "voidwarden_ingot (8).json" buildsrc/src/main/resources/data/voidwarden/recipe/voidwarden_ingot.json
           cp "voidwarden_helmet (10).json" buildsrc/src/main/resources/data/voidwarden/recipe/voidwarden_helmet.json
           cp "voidwarden_chestplate (9).json" buildsrc/src/main/resources/data/voidwarden/recipe/voidwarden_chestplate.json
