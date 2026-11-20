@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Extract mod source
         run: |
-          unzip -q voidwarden-fabric-mod-src.zip
+          unzip -q sentinel-source-upload.zip
           cd voidwarden
           sed -i 's/^loader_version=.*/loader_version=0.20.1/' gradle.properties
           sed -i 's|^loom_version=.*|loom_version=1.19-SNAPSHOT|' gradle.properties
