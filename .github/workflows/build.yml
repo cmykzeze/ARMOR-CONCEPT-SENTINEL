@@ -19,8 +19,9 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          python3 -m pip install --user Pillow
-          python3 gen.py
+          python3 -m venv .venv
+          .venv/bin/pip install Pillow
+          .venv/bin/python gen.py
           mkdir -p buildsrc/src/main/java/com/voidwarden/client
           mkdir -p buildsrc/src/main/java/com/voidwarden/mixin
           mkdir -p buildsrc/src/main/resources/assets/voidwarden/{equipment,lang,items,models/item,textures/item,textures/entity/cape,textures/entity/equipment/humanoid,textures/entity/equipment/humanoid_leggings}
