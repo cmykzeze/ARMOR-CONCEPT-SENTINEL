@@ -13,15 +13,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Verify source archive
+      - name: Assemble Fabric project from uploaded source files
+        shell: bash
         run: |
-          test -f sentinel-source-upload.zip || {
-            echo "::error::sentinel-source-upload.zip is missing from the repository root."
-            exit 1
-          }
+          set -euxo pipefail
+          mkdir -p buildsrc/src/main/java/com/voidwarden/client
+          mkdir -p buildsrc/src/main/java/com/voidwarden/mixin
+          mkdir -p buildsrc/src/main/resources/assets/voidwarden/{equipment,lang,items,models/item,textures/item,textures/entity/cape,textures/entity/equipment/humanoid,textures/entity/equipment/humanoid_leggings}
+          mkdir -p buildsrc/src/main/resources/data/voidwarden/{recipe,tags/item}
 
-      - name: Extract mod source
-        run: unzip -q sentinel-source-upload.zip
+          cp build.gradle settings.gradle gradle.properties fabric.mod.json voidwarden.mixins.json buildsrc/
+          cp VoidWarden.java ModItems.java buildsrc/src/main/java/com/voidwarden/
+          cp VoidWardenClient.java VoidCapeLayer.java buildsrc/src/main/java/com/voidwarden/client/
+          cp SmithingMenuMixin.java buildsrc/src/main/java/com/voidwarden/mixin/
+
+          cp en_us.json buildsrc/src/main/resources/assets/voidwarden/lang/
+          cp voidwarden.json buildsrc/src/main/resources/assets/voidwarden/equipment/
+          cp voidwarden_helmet.json voidwarden_chestplate.json voidwarden_leggings.json voidwarden_boots.json voidwarden_ingot.json voidwarden_nugget.json buildsrc/src/main/resources/assets/voidwarden/items/
+          cp "voidwarden_helmet (3).json" buildsrc/src/main/resources/assets/voidwarden/models/item/voidwarden_helmet.json
+          cp "voidwarden_chestplate (2).json" buildsrc/src/main/resources/assets/voidwarden/models/item/voidwarden_chestplate.json
+          cp "voidwarden_leggings (5).json" buildsrc/src/main/resources/assets/voidwarden/models/item/voidwarden_leggings.json
+          cp "voidwarden_boots (6).json" buildsrc/src/main/resources/assets/voidwarden/models/item/voidwarden_boots.json
+          cp "voidwarden_ingot (1).json" buildsrc/src/main/resources/assets/voidwarden/models/item/voidwarden_ingot.json
+          cp "voidwarden_nugget (4).json" buildsrc/src/main/resources/assets/voidwarden/models/item/voidwarden_nugget.json
+
+          cp voidwarden_helmet.png voidwarden_chestplate.png voidwarden_leggings.png voidwarden_boots.png voidwarden_ingot.png voidwarden_nugget.png buildsrc/src/main/resources/assets/voidwarden/textures/item/
+          cp voidwarden_cape.png buildsrc/src/main/resources/assets/voidwarden/textures/entity/cape/
+          cp voidwarden.png buildsrc/src/main/resources/assets/voidwarden/textures/entity/equipment/humanoid/
+          cp "voidwarden (7).png" buildsrc/src/main/resources/assets/voidwarden/textures/entity/equipment/humanoid_leggings/
+
+          cp "voidwarden_ingot (8).json" buildsrc/src/main/resources/data/voidwarden/recipe/voidwarden_ingot.json
+          cp "voidwarden_helmet (10).json" buildsrc/src/main/resources/data/voidwarden/recipe/voidwarden_helmet.json
+          cp "voidwarden_chestplate (9).json" buildsrc/src/main/resources/data/voidwarden/recipe/voidwarden_chestplate.json
+          cp "voidwarden_leggings (11).json" buildsrc/src/main/resources/data/voidwarden/recipe/voidwarden_leggings.json
+          cp "voidwarden_boots (12).json" buildsrc/src/main/resources/data/voidwarden/recipe/voidwarden_boots.json
+          cp repairs_voidwarden_armor.json buildsrc/src/main/resources/data/voidwarden/tags/item/
 
       - uses: actions/setup-java@v4
         with:
@@ -33,11 +59,11 @@ jobs:
           gradle-version: '9.6.0'
 
       - name: Build mod
-        working-directory: voidwarden
+        working-directory: buildsrc
         run: gradle build --no-daemon
 
       - uses: actions/upload-artifact@v4
         with:
           name: sentinel-armor-minecraft-26.3
-          path: voidwarden/build/libs/*.jar
+          path: buildsrc/build/libs/*.jar
           if-no-files-found: error
