@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.Identifier;
 
@@ -57,7 +57,7 @@ public class VoidCapeLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
         }
         pose.pushPose();
         pose.translate(0.0f, state.isCrouching ? 0.14f : 0.0f, 0.125f);
-        collector.submitModelPart(root, pose, RenderType.entityCutoutNoCull(TEX), light, OverlayTexture.NO_OVERLAY, null);
+        collector.submitModelPart(root, pose, RenderTypes.entityCutout(TEX), light, OverlayTexture.NO_OVERLAY, null);
         pose.popPose();
     }
 }
