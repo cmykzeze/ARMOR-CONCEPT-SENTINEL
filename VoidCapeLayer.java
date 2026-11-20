@@ -122,9 +122,9 @@ public class VoidCapeLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
                         + 0.025f * (float) Math.sin(phase + 1.1f);
 
                 // Spring stiffness and damping are deliberately conservative.
-                pitchVelocity[i] = spring(pitch[i], pitchVelocity[i], pitchTarget, 25f, 8.5f, dt);
-                yawVelocity[i] = spring(yaw[i], yawVelocity[i], yawTarget, 21f, 8.0f, dt);
-                rollVelocity[i] = spring(roll[i], rollVelocity[i], rollTarget, 19f, 7.5f, dt);
+                pitchVelocity[i] = spring(pitch[i], pitchVelocity[i], pitchTarget, 25f, 8.5f, 0.075f * k, dt);
+                yawVelocity[i] = spring(yaw[i], yawVelocity[i], yawTarget, 21f, 8.0f, 0f, dt);
+                rollVelocity[i] = spring(roll[i], rollVelocity[i], rollTarget, 19f, 7.5f, 0f, dt);
 
                 pitch[i] += pitchVelocity[i] * dt;
                 yaw[i] += yawVelocity[i] * dt;
@@ -137,8 +137,8 @@ public class VoidCapeLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
         }
 
         private static float spring(float position, float velocity, float target,
-                                    float stiffness, float damping, float dt) {
-            float acceleration = (target - position) * stiffness - velocity * damping;
+                                    float stiffness, float damping, float gravity, float dt) {
+            float acceleration = (target - position) * stiffness - velocity * damping + gravity;
             return velocity + acceleration * dt;
         }
 
