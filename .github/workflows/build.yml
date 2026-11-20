@@ -3,30 +3,39 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Extract mod source
+
+      - name: Verify source archive
         run: |
-          unzip -q sentinel-source-upload.zip
-          cd voidwarden
-          sed -i 's/^loader_version=.*/loader_version=0.20.1/' gradle.properties
-          sed -i 's|^loom_version=.*|loom_version=1.19-SNAPSHOT|' gradle.properties
-          sed -i 's/^fabric_api_version=.*/fabric_api_version=0.166.2+26.3/' gradle.properties
+          test -f sentinel-source-upload.zip || {
+            echo "::error::sentinel-source-upload.zip is missing from the repository root."
+            exit 1
+          }
+
+      - name: Extract mod source
+        run: unzip -q sentinel-source-upload.zip
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '25'
+
       - uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: '9.2.1'
+          gradle-version: '9.6.0'
+
       - name: Build mod
         working-directory: voidwarden
         run: gradle build --no-daemon
+
       - uses: actions/upload-artifact@v4
         with:
           name: sentinel-armor-minecraft-26.3
