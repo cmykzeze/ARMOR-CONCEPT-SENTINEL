@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "com.voidwarden.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "SmithingMenuMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

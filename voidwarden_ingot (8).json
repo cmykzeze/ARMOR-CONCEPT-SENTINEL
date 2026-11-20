@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NNN",
+    "NBN",
+    "NNN"
+  ],
+  "key": {
+    "N": "voidwarden:voidwarden_nugget",
+    "B": "minecraft:dragon_breath"
+  },
+  "result": {
+    "id": "voidwarden:voidwarden_ingot",
+    "count": 1
+  }
+}

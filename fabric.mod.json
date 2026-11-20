@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "voidwarden",
+  "version": "1.0.0",
+  "name": "Voidwarden Armor",
+  "description": "Post-netherite armor with an animated cape.",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.voidwarden.VoidWarden"
+    ],
+    "client": [
+      "com.voidwarden.client.VoidWardenClient"
+    ]
+  },
+  "mixins": [
+    "voidwarden.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.20.1",
+    "minecraft": "~26.3",
+    "fabric-api": "*",
+    "java": ">=25"
+  }
+}
