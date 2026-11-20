@@ -3,8 +3,8 @@ package com.voidwarden.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.voidwarden.ModItems;
 import com.voidwarden.VoidWarden;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
@@ -31,7 +31,12 @@ public class VoidCapeLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
     private static final float SUBSTEP = 1.0f / 60.0f;
     private final ModelPart root;
     private final ModelPart[] seg = new ModelPart[SEGS];
-    private final Map<AvatarRenderState, CapeMotion> motionByAvatar = new WeakHashMap<>();
+    private final Map<Integer, CapeMotion> motionByAvatar = new LinkedHashMap<>(16, 0.75f, true) {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<Integer, CapeMotion> eldest) {
+            return size() > 128;
+        }
+    };
 
     public VoidCapeLayer(RenderLayerParent<AvatarRenderState, PlayerModel> parent) {
         super(parent);
@@ -57,8 +62,10 @@ public class VoidCapeLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
 
         float age = state.ageInTicks;
         float walk = Math.max(0f, Math.min(1f, state.walkAnimationSpeed));
-        CapeMotion motion = motionByAvatar.computeIfAbsent(state, ignored -> new CapeMotion());
-        motion.advance(age, yRot, walk, state.isCrouching);
+        CapeMotion motion = motionByAvatar.computeIfAbsent(state.id, ignored -> new CapeMotion());
+        motion.advance(age, yRot, walk, state.isCrouching, state.capeFlap,
+                state.capeLean, state.capeLean2, state.isFallFlying,
+                state.fallFlyingScale(), state.isVisuallySwimming);
 
         for (int i = 0; i < SEGS; i++) {
             seg[i].xRot = motion.pitch[i];
@@ -85,7 +92,9 @@ public class VoidCapeLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
         private float lastYaw;
         private boolean initialized;
 
-        void advance(float age, float bodyYawDegrees, float walk, boolean crouching) {
+        void advance(float age, float bodyYawDegrees, float walk, boolean crouching,
+                     float capeFlap, float capeLean, float capeLean2,
+                     boolean fallFlying, float flightScale, boolean swimming) {
             if (!initialized) {
                 initialized = true;
                 lastAge = age;
@@ -104,21 +113,31 @@ public class VoidCapeLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
             float remaining = dt;
             while (remaining > 0f) {
                 float step = Math.min(remaining, SUBSTEP);
-                simulate(step, age, walk, crouching, turnRate);
+                simulate(step, age, walk, crouching, turnRate, capeFlap, capeLean,
+                        capeLean2, fallFlying, flightScale, swimming);
                 remaining -= step;
             }
         }
 
-        private void simulate(float dt, float age, float walk, boolean crouching, float turnRate) {
+        private void simulate(float dt, float age, float walk, boolean crouching, float turnRate,
+                              float capeFlap, float capeLean, float capeLean2,
+                              boolean fallFlying, float flightScale, boolean swimming) {
             float turn = clamp(-turnRate * 0.045f, -0.34f, 0.34f);
+            float verticalMotion = clamp(capeFlap * 0.0045f, -0.08f, 0.18f);
+            float forwardMotion = clamp(capeLean * 0.0025f, 0f, 0.38f);
+            float sideMotion = clamp(capeLean2 * 0.010f, -0.22f, 0.22f);
+            float flightMotion = fallFlying ? Math.max(0.12f, flightScale * 0.34f) : 0f;
+            float swimMotion = swimming ? 0.14f : 0f;
             for (int i = 0; i < SEGS; i++) {
                 float k = (i + 1f) / SEGS;
                 float phase = age * 0.075f - i * 0.58f;
                 // The lower panels lag farther behind the torso, like real cloth.
-                float pitchTarget = 0.045f + walk * 0.54f * k
+                float pitchTarget = 0.045f + walk * 0.30f * k + forwardMotion * k
+                        + verticalMotion * k + flightMotion * k + swimMotion * k
                         + (crouching ? 0.10f * k : 0f) + 0.025f * (float) Math.sin(phase);
-                float yawTarget = turn * k + 0.018f * (float) Math.sin(phase * 0.8f);
-                float rollTarget = -turn * 0.30f * k
+                float yawTarget = turn * k + sideMotion * k
+                        + 0.018f * (float) Math.sin(phase * 0.8f);
+                float rollTarget = -turn * 0.30f * k + sideMotion * 0.65f * k
                         + 0.025f * (float) Math.sin(phase + 1.1f);
 
                 // Spring stiffness and damping are deliberately conservative.
