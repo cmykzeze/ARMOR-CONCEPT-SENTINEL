@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "voidwarden",
-  "version": "1.0.1",
-  "name": "Voidwarden Armor",
-  "description": "Post-netherite armor with an animated cape.",
+  "version": "1.1.0",
+  "name": "Sentinel Armor",
+  "description": "Post-netherite Sentinel armor with a detailed animated cape.",
   "environment": "*",
   "entrypoints": {
     "main": [
