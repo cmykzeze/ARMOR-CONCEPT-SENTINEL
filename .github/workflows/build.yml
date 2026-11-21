@@ -3,7 +3,7 @@ on:
   push:
     branches: [main, 'upgrade/**', 'feature/**']
   pull_request:
-    branches: [main]
+    branches: [main, 'upgrade/**']
   workflow_dispatch:
 
 permissions:
